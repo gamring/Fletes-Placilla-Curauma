@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transportes Placilla Curauma | Cotizador de Fletes V Región</title>
+  <style>
+    :root {
+      --primary: #0b2e59;      /* Azul Kia Frontier corporativo */
+      --primary-light: #164b8a;
+      --accent: #f59e0b;       /* Amarillo alto contraste */
+      --accent-hover: #d97706;
+      --whatsapp: #16a34a;
+      --whatsapp-hover: #15803d;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      padding: 22px 16px;
+      text-align: center;
+      border-bottom: 4px solid var(--accent);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    header p {
+      font-size: 0.92rem;
+      color: #e2e8f0;
+      margin-top: 4px;
+    }
+
+    .truck-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-top: 10px;
+      color: #fde68a;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 20px auto;
+      padding: 0 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+      border: 1px solid #e2e8f0;
+    }
+
+    .card-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .step-num {
+      background: var(--primary);
+      color: #fff;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      margin-right: 8px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    label {
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #334155;
+    }
+
+    select, input[type="text"], input[type="date"], textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: #fff;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(22, 75, 138, 0.12);
+    }
+
+    .mode-switch {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 9px 10px;
+      border: 2px solid var(--border);
+      background: #f8fafc;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #475569;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      border-color: var(--primary);
+      background: #eff6ff;
+      color: var(--primary);
+    }
+
+    .mode-btn.long-trip.active {
+      border-color: var(--accent-hover);
+      background: #fffbeb;
+      color: #92400e;
+    }
+
+    /* Selector de carga */
+    .cargo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .cargo-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+
+    .cargo-info span {
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .cargo-info small {
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .counter button {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--primary);
+    }
+
+    .counter button:hover { background: #e2e8f0; }
+
+    .counter span {
+      min-width: 20px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    /* Barra de capacidad 2500 kg */
+    .capacity-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .capacity-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--whatsapp);
+      transition: width 0.3s, background 0.3s;
+    }
+
+    .warning-text {
+      color: var(--danger);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .radio-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill-label {
+      flex: 1;
+      min-width: 120px;
+      cursor: pointer;
+    }
+
+    .pill-label input { display: none; }
+
+    .pill-box {
+      display: block;
+      text-align: center;
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: #f8fafc;
+      transition: all 0.2s;
+    }
+
+    .pill-label input:checked + .pill-box {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Chips rápidos para requerimiento escrito */
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .tag-btn {
+      background: #eff6ff;
+      color: var(--primary);
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tag-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .req-highlight {
+      border: 2px solid #93c5fd;
+      background: #f8fafc;
+    }
+
+    .btn-whatsapp {
+      width: 100%;
+      background: var(--whatsapp);
+      color: #fff;
+      border: none;
+      padding: 15px 20px;
+      font-size: 1.08rem;
+      font-weight: 800;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-whatsapp:hover { background: var(--whatsapp-hover); }
+    .btn-whatsapp:active { transform: scale(0.99); }
+
+    .note-footer {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Transportes Placilla Curauma</h1>
+  <p>Fletes, Traslados y Carga Paletizada • V Región y Viajes a Regiones</p>
+  <div class="truck-badge">
+    🚛 Kia Bongo / Frontier Abierto • Capacidad 2.500 kg • Plataforma Hidráulica
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- PASO 1: ORIGEN -->
+  <div class="card">
+    <div class="card-title">
+      <div><span class="step-num">1</span> Punto de Origen (Carga)</div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label for="origenComuna">Comuna de Origen (V Región)</label>
+        <select id="origenComuna"></select>
+      </div>
+      <div class="form-group">
+        <label for="origenSector">Sector / Barrio / Localidad</label>
+        <select id="origenSector"></select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label for="origenRef">Calle o referencia aproximada (Opcional)</label>
+      <input type="text" id="origenRef" placeholder="Ej: Av. Cardenal Samoré, Parque Industrial, Condominio..." />
+    </div>
+  </div>
+
+  <!-- PASO 2: DESTINO -->
+  <div class="card">
+    <div class="card-title">
+      <div><span class="step-num">2</span> Punto de Destino (Descarga)</div>
+    </div>
+
+    <div class="mode-switch">
+      <button type="button" class="mode-btn active" id="btnDestVRegion" onclick="setDestinoMode('vregion')">
+        📍 Dentro de la V Región (36 Comunas)
+      </button>
+      <button type="button" class="mode-btn long-trip" id="btnDestOtras" onclick="setDestinoMode('otras')">
+        🛣️ Viaje Largo / Otras Regiones
+      </button>
+    </div>
+
+    <!-- Destino dentro de V Región -->
+    <div id="bloqueDestinoVRegion">
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="destinoComuna">Comuna de Destino</label>
+          <select id="destinoComuna"></select>
+        </div>
+        <div class="form-group">
+          <label for="destinoSector">Sector / Barrio / Localidad</label>
+          <select id="destinoSector"></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Destino Otras Regiones -->
+    <div id="bloqueDestinoOtras" class="hidden">
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="regionDestino">Región de Destino</label>
+          <select id="regionDestino">
+            <option value="Región Metropolitana (Santiago)">Región Metropolitana (Santiago)</option>
+            <option value="IV Región de Coquimbo (La Serena / Coquimbo / Ovalle)">IV Región de Coquimbo</option>
+            <option value="VI Región de O'Higgins (Rancagua / San Fernando)">VI Región de O'Higgins</option>
+            <option value="VII Región del Maule (Talca / Curicó)">VII Región del Maule</option>
+            <option value="III Región de Atacama (Copiapó / Vallenar)">III Región de Atacama</option>
+            <option value="VIII Región del Biobío (Concepción)">VIII Región del Biobío</option>
+            <option value="Otra Región de Chile">Otra Región de Chile</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ciudadDestinoOtra">Comuna y Sector de Destino</label>
+          <input type="text" id="ciudadDestinoOtra" placeholder="Ej: Pudahuel - Bodegas San Francisco" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:0;">
+      <label for="destinoRef">Referencia de entrega (Opcional)</label>
+      <input type="text" id="destinoRef" placeholder="Ej: Casa, bodega con andén, piso de departamento..." />
+    </div>
+  </div>
+
+  <!-- PASO 3: DETALLE DE CARGA -->
+  <div class="card">
+    <div class="card-title">
+      <div><span class="step-num">3</span> ¿Qué necesitas trasladar?</div>
+    </div>
+
+    <p style="font-size:0.84rem; color:var(--muted); margin-bottom:10px;">
+      Selecciona cantidades referenciales para calcular el peso estimado (máx. 2.500 kg) o descríbelo abajo:
+    </p>
+
+    <div class="cargo-grid" id="cargoGrid"></div>
+
+    <div class="capacity-box">
+      <div class="capacity-header">
+        <span>Peso estimado seleccionado:</span>
+        <span id="pesoTotalTexto">0 kg / 2.500 kg</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="warning-text" id="warningPeso">
+        ⚠️ La carga estimada supera los 2.500 kg de capacidad del camión. Indícalo en tu requerimiento para coordinar.
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 4: LOGÍSTICA Y SERVICIO -->
+  <div class="card">
+    <div class="card-title">
+      <div><span class="step-num">4</span> Condiciones del Servicio</div>
+    </div>
+
+    <div class="form-group">
+      <label>¿Requiere uso de Plataforma Hidráulica?</label>
+      <div class="radio-pills">
+        <label class="pill-label">
+          <input type="radio" name="plataforma" value="Sí, necesito plataforma hidráulica" checked />
+          <span class="pill-box">✅ Sí, necesaria</span>
+        </label>
+        <label class="pill-label">
+          <input type="radio" name="plataforma" value="No es necesaria (carga manual/grúa)" />
+          <span class="pill-box">No es necesaria</span>
+        </label>
+        <label class="pill-label">
+          <input type="radio" name="plataforma" value="A evaluar según carga" />
+          <span class="pill-box">Por evaluar</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Personal de Carga y Descarga</label>
+      <div class="radio-pills">
+        <label class="pill-label">
+          <input type="radio" name="peonetas" value="Solo chofer (cliente carga/descarga)" checked />
+          <span class="pill-box">Solo Chofer</span>
+        </label>
+        <label class="pill-label">
+          <input type="radio" name="peonetas" value="Chofer + 1 Ayudante (Peoneta)" />
+          <span class="pill-box">Chofer + 1 Ayudante</span>
+        </label>
+        <label class="pill-label">
+          <input type="radio" name="peonetas" value="Chofer + 2 Ayudantes (Peonetas)" />
+          <span class="pill-box">Chofer + 2 Ayudantes</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label for="fechaServicio">Fecha estimada del flete</label>
+        <input type="date" id="fechaServicio" />
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label for="horarioServicio">Jornada preferida</label>
+        <select id="horarioServicio">
+          <option value="Lo antes posible / Urgente">Lo antes posible / Urgente</option>
+          <option value="Mañana (08:00 - 13:00 hrs)">Mañana (08:00 - 13:00 hrs)</option>
+          <option value="Tarde (14:00 - 19:00 hrs)">Tarde (14:00 - 19:00 hrs)</option>
+          <option value="Horario flexible a convenir">Horario flexible a convenir</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 5: REQUERIMIENTO ESCRITO POR EL CLIENTE -->
+  <div class="card req-highlight">
+    <div class="card-title">
+      <div><span class="step-num">5</span> Tu Requerimiento Específico y Datos</div>
+    </div>
+
+    <div class="form-group">
+      <label for="requerimientoCliente">Escribe aquí tu requerimiento, medidas de carga o instrucciones especiales:</label>
+      <div class="quick-tags">
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Requiere Factura')">+ Requiere Factura</button>
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Necesita carpa / protección lluvia')">+ Carpa / Lluvia</button>
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Acceso por pasaje estrecho')">+ Pasaje estrecho</button>
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Carga frágil / delicada')">+ Carga frágil</button>
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Condominio con restricción horaria')">+ Condominio / Horario</button>
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Con parada intermedia')">+ Parada intermedia</button>
+      </div>
+      <textarea id="requerimientoCliente" rows="4" placeholder="Ej: Necesito trasladar 2 pallets de cerámica (1.20 x 1.00 m) más un refrigerador vertical. En destino hay que bajarlos con la plataforma hidráulica y entrar por portón de 2.4 m de ancho..."></textarea>
+    </div>
+
+    <div class="form-group" style="margin-bottom:0;">
+      <label for="nombreCliente">Tu Nombre o Empresa</label>
+      <input type="text" id="nombreCliente" placeholder="Ej: Juan Pérez / Ferretería del Sur" />
+    </div>
+  </div>
+
+  <!-- BOTÓN DE ENVÍO -->
+  <button type="button" class="btn-whatsapp" onclick="enviarCotizacionWhatsApp()">
+    <span>📲 Enviar Requerimiento por WhatsApp</span>
+  </button>
+  <p class="note-footer">
+    Recibirás respuesta directa con el valor exacto según distancia, carga y tus requerimientos.
+  </p>
+
+</div>
+
+<script>
+  // Base de datos completa de las 36 comunas continentales de la Región de Valparaíso
+  const comunasVRegion = {
+    "Valparaíso": [
+      "Placilla de Peñuelas",
+      "Curauma",
+      "Parque Industrial Placilla",
+      "El Almendral / Centro",
+      "Barón / Puerto",
+      "Playa Ancha",
+      "Cerro Alegre / Concepción",
+      "Cerro Los Placeres",
+      "Cerro Esperanza",
+      "Cerro Barón / Lecheros",
+      "Cerro Polanco / Larraín",
+      "Cerro Ramaditas / Rocuant",
+      "Cerro San Roque",
+      "Rodelillo",
+      "Laguna Verde",
+      "Quintay (Sector Norte)"
+    ],
+    "Viña del Mar": [
+      "Plan / Centro / Av. Libertad",
+      "Reñaca",
+      "Reñaca Alto",
+      "Gómez Carreño",
+      "Santa Inés",
+      "Miraflores",
+      "Chorrillos / El Salto",
+      "Forestal",
+      "Nueva Aurora",
+      "Agua Santa",
+      "Recreo",
+      "Achupallas",
+      "Villa Dulce",
+      "Glorias Navales"
+    ],
+    "Quilpué": [
+      "Centro / Estación",
+      "El Belloto (Norte / Sur)",
+      "Belloto 2000",
+      "Los Pinos",
+      "Teniente Serrano",
+      "Valencia",
+      "Pompeya",
+      "Paso Hondo",
+      "Colliguay"
+    ],
+    "Villa Alemana": [
+      "Centro / Estación",
+      "Peñablanca",
+      "El Carmen",
+      "Las Américas",
+      "Troncos Viejos",
+      "Gumercindo",
+      "Lo Hidalgo",
+      "Quebrada Escobares"
+    ],
+    "Concón": [
+      "Concón Centro",
+      "Costa de Montemar",
+      "Bosques de Montemar",
+      "Higuerillas",
+      "La Boca",
+      "Villa Primavera",
+      "Camino Internacional / Parque Industrial",
+      "Colmo"
+    ],
+    "Casablanca": [
+      "Casablanca Urbano",
+      "Quintay",
+      "Tunquén",
+      "Lagunillas",
+      "Lo Ovalle",
+      "Tapihue",
+      "Las Dichas",
+      "Lo Vásquez",
+      "Ruta 68 (Viñas)"
+    ],
+    "San Antonio": [
+      "San Antonio Centro / Puerto",
+      "Barrancas",
+      "Llolleo",
+      "Tejas Verdes",
+      "Cerro Alegre",
+      "Bellavista",
+      "Alto Mirador",
+      "Cuncumén",
+      "Lo Gallardo",
+      "Leyda"
+    ],
+    "Cartagena": [
+      "Cartagena Centro / Playa Chica",
+      "Playa Grande",
+      "San Sebastián",
+      "Costa Azul",
+      "Lo Abarca",
+      "Lo Zárate",
+      "El Turco"
+    ],
+    "El Tabo": [
+      "El Tabo Centro",
+      "Las Cruces",
+      "Playas Blancas",
+      "San Carlos",
+      "El Tabito"
+    ],
+    "El Quisco": [
+      "El Quisco Centro",
+      "Isla Negra",
+      "Punta de Tralca",
+      "El Totoral"
+    ],
+    "Algarrobo": [
+      "Algarrobo Centro",
+      "Algarrobo Norte",
+      "Mirasol",
+      "San Alfonso del Mar",
+      "Canelo / Canelillo",
+      "El Yeco",
+      "San José"
+    ],
+    "Santo Domingo": [
+      "Santo Domingo Balneario",
+      "Las Brisas",
+      "Santa María del Mar",
+      "Bucalemu",
+      "El Convento",
+      "San Enrique"
+    ],
+    "Quillota": [
+      "Quillota Centro",
+      "San Pedro",
+      "La Palma",
+      "Boco",
+      "Rautén",
+      "Manzanar",
+      "El Bajío"
+    ],
+    "La Calera": [
+      "La Calera Centro",
+      "Artificio",
+      "Pachacama",
+      "Pachacamita",
+      "Las Cabritas"
+    ],
+    "Hijuelas": [
+      "Hijuelas Centro",
+      "Ocoa",
+      "Romeral",
+      "Rabuco",
+      "Punta Torrejón"
+    ],
+    "La Cruz": [
+      "La Cruz Centro",
+      "Pocochay",
+      "Lo Rojas",
+      "Charravata"
+    ],
+    "Nogales": [
+      "Nogales Centro",
+      "El Melón",
+      "La Peña",
+      "El Polígono",
+      "Los Litres"
+    ],
+    "Limache": [
+      "San Francisco de Limache",
+      "Limache Viejo",
+      "Lliu Lliu",
+      "Los Laureles",
+      "Tabolango",
+      "Limachito"
+    ],
+    "Olmué": [
+      "Olmué Centro",
+      "Granizo",
+      "La Dormida",
+      "Quebrada Alvarado",
+      "Lo Narváez",
+      "Las Palmas"
+    ],
+    "Quintero": [
+      "Quintero Centro",
+      "Loncura",
+      "Mantagua",
+      "Ritoque",
+      "Valle Alegre",
+      "Santa Julia"
+    ],
+    "Puchuncaví": [
+      "Puchuncaví Centro",
+      "Las Ventanas",
+      "Horcón",
+      "Maitencillo",
+      "La Laguna",
+      "Campiche",
+      "La Greda"
+    ],
+    "San Felipe": [
+      "San Felipe Centro",
+      "Curimón",
+      "Almendral",
+      "Bucalemu",
+      "21 de Mayo",
+      "Tierras Blancas"
+    ],
+    "Llaillay": [
+      "Llaillay Centro",
+      "Las Vegas",
+      "Los Loros",
+      "El Porvenir",
+      "Santa Rosa"
+    ],
+    "Catemu": [
+      "Catemu Centro",
+      "Chagres",
+      "El Nilhue",
+      "Las Varillas",
+      "Santa Margarita"
+    ],
+    "Panquehue": [
+      "Panquehue Centro",
+      "Palomar",
+      "Escorial",
+      "Lo Campo",
+      "San Roque"
+    ],
+    "Putaendo": [
+      "Putaendo Centro",
+      "Rinconada de Silva",
+      "Guzmanes",
+      "Piguchén",
+      "Quebrada Herrera",
+      "Granallas"
+    ],
+    "Santa María": [
+      "Santa María Centro",
+      "Jahuel",
+      "Tocornal",
+      "San Fernando",
+      "Las Cabras"
+    ],
+    "Los Andes": [
+      "Los Andes Centro",
+      "Centenario",
+      "El Sauce",
+      "Río Blanco",
+      "Saladillo",
+      "Los Chacayes"
+    ],
+    "Calle Larga": [
+      "Calle Larga Centro",
+      "Pocuro",
+      "San Vicente",
+      "El Pedrero",
+      "La Pampilla"
+    ],
+    "Rinconada": [
+      "Rinconada Centro",
+      "Casuto",
+      "Auco",
+      "Las Bandurrias"
+    ],
+    "San Esteban": [
+      "San Esteban Centro",
+      "Cariño Botado",
+      "Lo Calvo",
+      "Campos de Ahumada",
+      "San Regis"
+    ],
+    "La Ligua": [
+      "La Ligua Centro",
+      "Valle Hermoso",
+      "Placilla de La Ligua",
+      "Pichicuy",
+      "Los Molles",
+      "Longotoma",
+      "Huaquén"
+    ],
+    "Cabildo": [
+      "Cabildo Centro",
+      "Artificio",
+      "Alicahue",
+      "Paihuén",
+      "La Vega"
+    ],
+    "Papudo": [
+      "Papudo Centro",
+      "Pullally",
+      "Las Salinas",
+      "Punta Puyai"
+    ],
+    "Zapallar": [
+      "Zapallar Centro",
+      "Cachagua",
+      "Catapilco",
+      "La Laguna de Zapallar",
+      "Blanquillo"
+    ],
+    "Petorca": [
+      "Petorca Centro",
+      "Chincolco",
+      "Hierro Viejo",
+      "Pedegua",
+      "Manuel Montt"
+    ]
+  };
+
+  // Ítems frecuentes para cálculo rápido de peso (Capacidad 2.500 kg)
+  const itemsCarga = [
+    { id: "pallet_liviano", nombre: "Pallet Liviano / Cajas", peso: 300 },
+    { id: "pallet_pesado", nombre: "Pallet Pesado / Cerámica", peso: 800 },
+    { id: "sacos_25", nombre: "Sacos 25 kg (Cemento/Adhesivo)", peso: 25 },
+    { id: "tambores", nombre: "Tambores / Tineta Pintura", peso: 200 },
+    { id: "electro", nombre: "Electrodoméstico Grande", peso: 85 },
+    { id: "muebles", nombre: "Mueble Grande / Cama / Sillón", peso: 60 },
+    { id: "cajas_sueltas", nombre: "Cajas / Bultos Medianos", peso: 20 },
+    { id: "maquinaria", nombre: "Maquinaria / Equipo Pesado", peso: 450 }
+  ];
+
+  const cantidades = {};
+  let modoDestino = "vregion";
+
+  function initSelects() {
+    const origenComuna = document.getElementById("origenComuna");
+    const destinoComuna = document.getElementById("destinoComuna");
+    const listaComunas = Object.keys(comunasVRegion);
+
+    listaComunas.forEach(comuna => {
+      origenComuna.add(new Option(comuna, comuna));
+      destinoComuna.add(new Option(comuna, comuna));
+    });
+
+    origenComuna.value = "Valparaíso";
+    cargarSectores("origenComuna", "origenSector", "Placilla de Peñuelas");
+
+    destinoComuna.value = "Viña del Mar";
+    cargarSectores("destinoComuna", "destinoSector");
+
+    origenComuna.addEventListener("change", () => cargarSectores("origenComuna", "origenSector"));
+    destinoComuna.addEventListener("change", () => cargarSectores("destinoComuna", "destinoSector"));
+  }
+
+  function cargarSectores(idComuna, idSector, valorPreferido = null) {
+    const comuna = document.getElementById(idComuna).value;
+    const selectSector = document.getElementById(idSector);
+    selectSector.innerHTML = "";
+
+    const sectores = comunasVRegion[comuna] || ["Sector Centro"];
+    sectores.forEach(sec => {
+      selectSector.add(new Option(sec, sec));
+    });
+    selectSector.add(new Option("Otro sector de la comuna", "Otro sector de la comuna"));
+
+    if (valorPreferido && sectores.includes(valorPreferido)) {
+      selectSector.value = valorPreferido;
+    }
+  }
+
+  function setDestinoMode(modo) {
+    modoDestino = modo;
+    document.getElementById("btnDestVRegion").classList.toggle("active", modo === "vregion");
+    document.getElementById("btnDestOtras").classList.toggle("active", modo === "otras");
+    document.getElementById("bloqueDestinoVRegion").classList.toggle("hidden", modo !== "vregion");
+    document.getElementById("bloqueDestinoOtras").classList.toggle("hidden", modo !== "otras");
+  }
+
+  function initCargoGrid() {
+    const grid = document.getElementById("cargoGrid");
+    itemsCarga.forEach(item => {
+      cantidades[item.id] = 0;
+      const div = document.createElement("div");
+      div.className = "cargo-item";
+      div.innerHTML = `
+        <div class="cargo-info">
+          <span>${item.nombre}</span>
+          <small>~${item.peso} kg c/u</small>
+        </div>
+        <div class="counter">
+          <button type="button" onclick="cambiarCantidad('${item.id}', -1)">-</button>
+          <span id="qty_${item.id}">0</span>
+          <button type="button" onclick="cambiarCantidad('${item.id}', 1)">+</button>
+        </div>
+      `;
+      grid.appendChild(div);
+    });
+  }
+
+  function cambiarCantidad(id, delta) {
+    cantidades[id] = Math.max(0, cantidades[id] + delta);
+    document.getElementById(`qty_${id}`).textContent = cantidades[id];
+    actualizarPeso();
+  }
+
+  function actualizarPeso() {
+    let total = 0;
+    itemsCarga.forEach(item => {
+      total += cantidades[item.id] * item.peso;
+    });
+
+    const maxCap = 2500;
+    document.getElementById("pesoTotalTexto").textContent = `${total.toLocaleString("es-CL")} kg / 2.500 kg`;
+
+    const pct = Math.min(100, (total / maxCap) * 100);
+    const fill = document.getElementById("progressFill");
+    fill.style.width = `${pct}%`;
+
+    const warning = document.getElementById("warningPeso");
+    if (total > maxCap) {
+      fill.style.background = "#dc2626";
+      warning.style.display = "block";
+    } else if (total > 2000) {
+      fill.style.background = "#f59e0b";
+      warning.style.display = "none";
+    } else {
+      fill.style.background = "#16a34a";
+      warning.style.display = "none";
+    }
+  }
+
+  // Agregar etiquetas rápidas al cuadro de requerimiento escrito
+  function agregarEtiqueta(texto) {
+    const textarea = document.getElementById("requerimientoCliente");
+    const actual = textarea.value.trim();
+    if (actual.includes(texto)) return;
+    textarea.value = actual ? `${actual}\n• ${texto}: ` : `• ${texto}: `;
+    textarea.focus();
+  }
+
+  // Generar mensaje y abrir WhatsApp
+  function enviarCotizacionWhatsApp() {
+    const telefono = "56999502795";
+
+    const origenComuna = document.getElementById("origenComuna").value;
+    const origenSector = document.getElementById("origenSector").value;
+    const origenRef = document.getElementById("origenRef").value.trim();
+
+    let destinoTexto = "";
+    if (modoDestino === "vregion") {
+      const destComuna = document.getElementById("destinoComuna").value;
+      const destSector = document.getElementById("destinoSector").value;
+      destinoTexto = `${destComuna} (${destSector})`;
+    } else {
+      const reg = document.getElementById("regionDestino").value;
+      const ciudad = document.getElementById("ciudadDestinoOtra").value.trim() || "Por confirmar";
+      destinoTexto = `${reg} - ${ciudad}`;
+    }
+    const destinoRef = document.getElementById("destinoRef").value.trim();
+
+    let listaItems = [];
+    let pesoTotal = 0;
+    itemsCarga.forEach(item => {
+      const q = cantidades[item.id];
+      if (q > 0) {
+        listaItems.push(`• ${q}x ${item.nombre} (~${q * item.peso} kg)`);
+        pesoTotal += q * item.peso;
+      }
+    });
+
+    const requerimientoCliente = document.getElementById("requerimientoCliente").value.trim();
+
+    if (listaItems.length === 0 && !requerimientoCliente) {
+      alert("Por favor selecciona al menos un ítem de carga o escribe tu requerimiento en el Paso 5.");
+      document.getElementById("requerimientoCliente").focus();
+      return;
+    }
+
+    const plataforma = document.querySelector('input[name="plataforma"]:checked').value;
+    const peonetas = document.querySelector('input[name="peonetas"]:checked').value;
+    const fecha = document.getElementById("fechaServicio").value || "Por coordinar";
+    const horario = document.getElementById("horarioServicio").value;
+    const cliente = document.getElementById("nombreCliente").value.trim() || "Cliente Web";
+
+    const folio = "TPC-" + Math.floor(1000 + Math.random() * 9000);
+
+    let msg = `*COTIZACIÓN FLETE - TRANSPORTES PLACILLA CURAUMA*\n`;
+    msg += `📋 *Folio:* #${folio}\n`;
+    msg += `👤 *Cliente:* ${cliente}\n`;
+    msg += `🚛 *Unidad:* Kia Bongo / Frontier Abierto (2.500 kg)\n\n`;
+
+    msg += `📍 *ORIGEN:* ${origenComuna} - ${origenSector}\n`;
+    if (origenRef) msg += `   _Ref:_ ${origenRef}\n`;
+
+    msg += `🏁 *DESTINO:* ${destinoTexto}\n`;
+    if (destinoRef) msg += `   _Ref:_ ${destinoRef}\n\n`;
+
+    if (listaItems.length > 0) {
+      msg += `📦 *CARGA SELECCIONADA:*\n`;
+      msg += listaItems.join("\n") + `\n`;
+      msg += `⚖️ *Peso estimado:* ${pesoTotal.toLocaleString("es-CL")} kg\n\n`;
+    }
+
+    if (requerimientoCliente) {
+      msg += `💬 *REQUERIMIENTO DEL CLIENTE:*\n`;
+      msg += `${requerimientoCliente}\n\n`;
+    }
+
+    msg += `⚙️ *CONDICIONES:*\n`;
+    msg += `• *Plataforma hidráulica:* ${plataforma}\n`;
+    msg += `• *Personal:* ${peonetas}\n`;
+    msg += `• *Fecha:* ${fecha} (${horario})\n\n`;
+    msg += `_Solicito valor del servicio según estos datos. ¡Gracias!_`;
+
+    const url = `https://wa.me/${telefono}?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank");
+  }
+
+  document.getElementById("fechaServicio").valueAsDate = new Date();
+  initSelects();
+  initCargoGrid();
+</script>
+
+</body>
+</html>
