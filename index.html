@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transportes Placilla Curauma | Cotizador de Fletes V Región</title>
+  <title>Transportes Placilla Curauma | Cotizador de Fletes y Mudanzas V Región</title>
   <style>
     :root {
       --primary: #0b2e59;      /* Azul Kia Frontier corporativo */
@@ -67,7 +67,7 @@
     }
 
     .container {
-      max-width: 760px;
+      max-width: 780px;
       margin: 20px auto;
       padding: 0 14px;
     }
@@ -91,6 +91,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .step-num {
@@ -175,10 +177,57 @@
       color: #92400e;
     }
 
+    /* Pestañas de habitaciones / categorías del hogar */
+    .cat-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .cat-tab {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cat-tab:hover {
+      background: #e2e8f0;
+    }
+
+    .cat-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .badge-count {
+      background: var(--accent);
+      color: #1e293b;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 999px;
+      display: none;
+    }
+
+    .badge-count.visible {
+      display: inline-block;
+    }
+
     /* Selector de carga */
     .cargo-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
       gap: 10px;
       margin-bottom: 14px;
     }
@@ -191,23 +240,31 @@
       justify-content: space-between;
       align-items: center;
       background: #f8fafc;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .cargo-item.selected {
+      border-color: var(--primary-light);
+      background: #eff6ff;
     }
 
     .cargo-info span {
       display: block;
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       font-weight: 600;
+      line-height: 1.25;
     }
 
     .cargo-info small {
       color: var(--muted);
-      font-size: 0.76rem;
+      font-size: 0.75rem;
     }
 
     .counter {
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
     }
 
     .counter button {
@@ -229,6 +286,18 @@
       text-align: center;
       font-weight: 700;
       font-size: 0.92rem;
+    }
+
+    /* Resumen rápido de lo seleccionado */
+    .selected-summary {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: #166534;
+      margin-bottom: 12px;
+      display: none;
     }
 
     /* Barra de capacidad 2500 kg */
@@ -268,6 +337,12 @@
       font-weight: 600;
       margin-top: 6px;
       display: none;
+    }
+
+    .custom-items-box {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
     }
 
     .radio-pills {
@@ -368,7 +443,7 @@
 
 <header>
   <h1>Transportes Placilla Curauma</h1>
-  <p>Fletes, Traslados y Carga Paletizada • V Región y Viajes a Regiones</p>
+  <p>Fletes, Mudanzas y Carga Paletizada • V Región y Viajes a Regiones</p>
   <div class="truck-badge">
     🚛 Kia Bongo / Frontier Abierto • Capacidad 2.500 kg • Plataforma Hidráulica
   </div>
@@ -450,22 +525,46 @@
 
     <div class="form-group" style="margin-bottom:0;">
       <label for="destinoRef">Referencia de entrega (Opcional)</label>
-      <input type="text" id="destinoRef" placeholder="Ej: Casa, bodega con andén, piso de departamento..." />
+      <input type="text" id="destinoRef" placeholder="Ej: Casa, departamento piso 3 sin ascensor, bodega..." />
     </div>
   </div>
 
-  <!-- PASO 3: DETALLE DE CARGA -->
+  <!-- PASO 3: INVENTARIO DETALLADO DEL HOGAR Y CARGA -->
   <div class="card">
     <div class="card-title">
       <div><span class="step-num">3</span> ¿Qué necesitas trasladar?</div>
     </div>
 
     <p style="font-size:0.84rem; color:var(--muted); margin-bottom:10px;">
-      Selecciona cantidades referenciales para calcular el peso estimado (máx. 2.500 kg) o descríbelo abajo:
+      Navega por las habitaciones de la casa para marcar tus muebles y enseres, o escríbelos más abajo si no aparecen:
     </p>
 
+    <!-- Pestañas por habitación / categoría -->
+    <div class="cat-tabs" id="catTabs">
+      <button type="button" class="cat-tab active" data-cat="dormitorio" onclick="cambiarCategoria('dormitorio')">
+        🛏️ Dormitorio <span class="badge-count" id="badge_dormitorio">0</span>
+      </button>
+      <button type="button" class="cat-tab" data-cat="living" onclick="cambiarCategoria('living')">
+        🛋️ Living / Comedor <span class="badge-count" id="badge_living">0</span>
+      </button>
+      <button type="button" class="cat-tab" data-cat="cocina" onclick="cambiarCategoria('cocina')">
+        🍳 Cocina / Lavado <span class="badge-count" id="badge_cocina">0</span>
+      </button>
+      <button type="button" class="cat-tab" data-cat="cajas_patio" onclick="cambiarCategoria('cajas_patio')">
+        📦 Cajas / Patio / Otros <span class="badge-count" id="badge_cajas_patio">0</span>
+      </button>
+      <button type="button" class="cat-tab" data-cat="comercial" onclick="cambiarCategoria('comercial')">
+        🏭 Pallets / Carga <span class="badge-count" id="badge_comercial">0</span>
+      </button>
+    </div>
+
+    <!-- Cuadrícula dinámica de ítems -->
     <div class="cargo-grid" id="cargoGrid"></div>
 
+    <!-- Resumen vivo de artículos seleccionados -->
+    <div class="selected-summary" id="selectedSummary"></div>
+
+    <!-- Barra de peso 2.500 kg -->
     <div class="capacity-box">
       <div class="capacity-header">
         <span>Peso estimado seleccionado:</span>
@@ -475,8 +574,14 @@
         <div class="progress-fill" id="progressFill"></div>
       </div>
       <div class="warning-text" id="warningPeso">
-        ⚠️ La carga estimada supera los 2.500 kg de capacidad del camión. Indícalo en tu requerimiento para coordinar.
+        ⚠️ La carga estimada supera los 2.500 kg de capacidad del camión. Indícalo abajo para coordinar.
       </div>
+    </div>
+
+    <!-- Campo libre si el cliente no encuentra su opción -->
+    <div class="custom-items-box">
+      <label for="otrosArticulosCasa">✍️ ¿No encuentras algún mueble u objeto en la lista? Escríbelo aquí:</label>
+      <textarea id="otrosArticulosCasa" rows="2" placeholder="Ej: 1 futón, 1 estufa a parafina, 1 piano vertical, 2 bicicletas de niño, 5 maceteros grandes..."></textarea>
     </div>
   </div>
 
@@ -542,25 +647,25 @@
   <!-- PASO 5: REQUERIMIENTO ESCRITO POR EL CLIENTE -->
   <div class="card req-highlight">
     <div class="card-title">
-      <div><span class="step-num">5</span> Tu Requerimiento Específico y Datos</div>
+      <div><span class="step-num">5</span> Requerimiento Especial y Datos de Contacto</div>
     </div>
 
     <div class="form-group">
-      <label for="requerimientoCliente">Escribe aquí tu requerimiento, medidas de carga o instrucciones especiales:</label>
+      <label for="requerimientoCliente">Instrucciones adicionales, accesos, pisos por escalera o requerimientos especiales:</label>
       <div class="quick-tags">
-        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Requiere Factura')">+ Requiere Factura</button>
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Departamento por escalera (indicar piso)')">+ Depto por escalera</button>
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Edificio con ascensor')">+ Con ascensor</button>
         <button type="button" class="tag-btn" onclick="agregarEtiqueta('Necesita carpa / protección lluvia')">+ Carpa / Lluvia</button>
         <button type="button" class="tag-btn" onclick="agregarEtiqueta('Acceso por pasaje estrecho')">+ Pasaje estrecho</button>
-        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Carga frágil / delicada')">+ Carga frágil</button>
         <button type="button" class="tag-btn" onclick="agregarEtiqueta('Condominio con restricción horaria')">+ Condominio / Horario</button>
-        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Con parada intermedia')">+ Parada intermedia</button>
+        <button type="button" class="tag-btn" onclick="agregarEtiqueta('Requiere Factura')">+ Requiere Factura</button>
       </div>
-      <textarea id="requerimientoCliente" rows="4" placeholder="Ej: Necesito trasladar 2 pallets de cerámica (1.20 x 1.00 m) más un refrigerador vertical. En destino hay que bajarlos con la plataforma hidráulica y entrar por portón de 2.4 m de ancho..."></textarea>
+      <textarea id="requerimientoCliente" rows="3" placeholder="Ej: Hay que bajar el refrigerador desde un 2do piso y subirlo a casa en Curauma. Pasaje ancho, sin problema de estacionamiento..."></textarea>
     </div>
 
     <div class="form-group" style="margin-bottom:0;">
       <label for="nombreCliente">Tu Nombre o Empresa</label>
-      <input type="text" id="nombreCliente" placeholder="Ej: Juan Pérez / Ferretería del Sur" />
+      <input type="text" id="nombreCliente" placeholder="Ej: Juan Pérez / María González" />
     </div>
   </div>
 
@@ -883,19 +988,60 @@
     ]
   };
 
-  // Ítems frecuentes para cálculo rápido de peso (Capacidad 2.500 kg)
+  // Inventario completo de casa + carga comercial organizado por categorías
   const itemsCarga = [
-    { id: "pallet_liviano", nombre: "Pallet Liviano / Cajas", peso: 300 },
-    { id: "pallet_pesado", nombre: "Pallet Pesado / Cerámica", peso: 800 },
-    { id: "sacos_25", nombre: "Sacos 25 kg (Cemento/Adhesivo)", peso: 25 },
-    { id: "tambores", nombre: "Tambores / Tineta Pintura", peso: 200 },
-    { id: "electro", nombre: "Electrodoméstico Grande", peso: 85 },
-    { id: "muebles", nombre: "Mueble Grande / Cama / Sillón", peso: 60 },
-    { id: "cajas_sueltas", nombre: "Cajas / Bultos Medianos", peso: 20 },
-    { id: "maquinaria", nombre: "Maquinaria / Equipo Pesado", peso: 450 }
+    // DORMITORIO
+    { id: "cama_1p", cat: "dormitorio", nombre: "Cama 1 / 1.5 Plazas (Base + Colchón)", peso: 45 },
+    { id: "cama_2p", cat: "dormitorio", nombre: "Cama 2 Plazas / Queen", peso: 65 },
+    { id: "cama_king", cat: "dormitorio", nombre: "Cama King / Súper King", peso: 85 },
+    { id: "camarote", cat: "dormitorio", nombre: "Camarote / Cama Nido", peso: 75 },
+    { id: "velador", cat: "dormitorio", nombre: "Velador / Mesa de noche", peso: 15 },
+    { id: "comoda", cat: "dormitorio", nombre: "Cómoda / Cajonera / Sinfonier", peso: 45 },
+    { id: "closet", cat: "dormitorio", nombre: "Clóset / Ropero (Armado o Desarmable)", peso: 80 },
+    { id: "escritorio", cat: "dormitorio", nombre: "Escritorio + Silla", peso: 35 },
+
+    // LIVING Y COMEDOR
+    { id: "sillon_1c", cat: "living", nombre: "Sillón 1 Cuerpo / Bergere / Poltrona", peso: 30 },
+    { id: "sillon_2c", cat: "living", nombre: "Sofá 2 Cuerpos", peso: 50 },
+    { id: "sillon_3c", cat: "living", nombre: "Sofá 3 Cuerpos / Seccional en L", peso: 85 },
+    { id: "mesa_comedor_6", cat: "living", nombre: "Mesa Comedor (4 a 6 personas)", peso: 55 },
+    { id: "mesa_comedor_8", cat: "living", nombre: "Mesa Comedor Grande (8+ personas)", peso: 80 },
+    { id: "silla_comedor", cat: "living", nombre: "Silla de Comedor / Piso", peso: 8 },
+    { id: "rack_tv", cat: "living", nombre: "Rack de TV / Arrimo / Mesa Centro", peso: 35 },
+    { id: "televisor", cat: "living", nombre: "Televisor Grande (+50 pulgadas)", peso: 20 },
+    { id: "vitrina_bufet", cat: "living", nombre: "Buffet / Vitrina / Estante Librero", peso: 60 },
+
+    // COCINA Y LAVANDERÍA
+    { id: "refri_normal", cat: "cocina", nombre: "Refrigerador Estándar (1 o 2 puertas)", peso: 75 },
+    { id: "refri_grande", cat: "cocina", nombre: "Refrigerador Side by Side / Grande", peso: 120 },
+    { id: "lavadora", cat: "cocina", nombre: "Lavadora / Secadora", peso: 70 },
+    { id: "cocina_gas", cat: "cocina", nombre: "Cocina a Gas (4 o 6 platos)", peso: 55 },
+    { id: "freezer", cat: "cocina", nombre: "Freezer / Congelador Horizontal", peso: 65 },
+    { id: "microondas", cat: "cocina", nombre: "Microondas / Horno Eléctrico", peso: 18 },
+    { id: "mueble_cocina", cat: "cocina", nombre: "Despensero / Mueble Auxiliar Cocina", peso: 45 },
+    { id: "cilindro_gas", cat: "cocina", nombre: "Cilindro de Gas (15 kg / 45 kg)", peso: 35 },
+
+    // CAJAS, PATIO Y OTROS DEL HOGAR
+    { id: "caja_mediana", cat: "cajas_patio", nombre: "Caja Mediana / Caja Plástica", peso: 18 },
+    { id: "caja_grande", cat: "cajas_patio", nombre: "Caja Grande / Bolsas con Ropa", peso: 25 },
+    { id: "bicicleta", cat: "cajas_patio", nombre: "Bicicleta / Moto Eléctrica", peso: 20 },
+    { id: "parrilla", cat: "cajas_patio", nombre: "Parrilla a Carbón o Gas / Quincho", peso: 45 },
+    { id: "juego_terraza", cat: "cajas_patio", nombre: "Juego de Terraza (Mesa + Sillas)", peso: 50 },
+    { id: "maceteros", cat: "cajas_patio", nombre: "Plantas Grandes / Maceteros Pesados", peso: 30 },
+    { id: "trotadora", cat: "cajas_patio", nombre: "Máquina Ejercicio (Trotadora/Elíptica)", peso: 75 },
+    { id: "herramientas", cat: "cajas_patio", nombre: "Escalera / Caja Herramientas / Cortacésped", peso: 35 },
+
+    // PALLETS / CARGA COMERCIAL
+    { id: "pallet_liviano", cat: "comercial", nombre: "Pallet Liviano / Cajas Comerciales", peso: 300 },
+    { id: "pallet_pesado", cat: "comercial", nombre: "Pallet Pesado / Cerámica / Construcción", peso: 800 },
+    { id: "sacos_25", cat: "comercial", nombre: "Sacos 25 kg (Cemento / Adhesivo)", peso: 25 },
+    { id: "maquinaria", cat: "comercial", nombre: "Maquinaria / Equipo Industrial", peso: 450 }
   ];
 
   const cantidades = {};
+  itemsCarga.forEach(item => { cantidades[item.id] = 0; });
+
+  let categoriaActiva = "dormitorio";
   let modoDestino = "vregion";
 
   function initSelects() {
@@ -942,12 +1088,23 @@
     document.getElementById("bloqueDestinoOtras").classList.toggle("hidden", modo !== "otras");
   }
 
-  function initCargoGrid() {
+  function cambiarCategoria(cat) {
+    categoriaActiva = cat;
+    document.querySelectorAll(".cat-tab").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.cat === cat);
+    });
+    renderCargoGrid();
+  }
+
+  function renderCargoGrid() {
     const grid = document.getElementById("cargoGrid");
-    itemsCarga.forEach(item => {
-      cantidades[item.id] = 0;
+    grid.innerHTML = "";
+
+    const filtrados = itemsCarga.filter(i => i.cat === categoriaActiva);
+    filtrados.forEach(item => {
+      const qty = cantidades[item.id];
       const div = document.createElement("div");
-      div.className = "cargo-item";
+      div.className = "cargo-item" + (qty > 0 ? " selected" : "");
       div.innerHTML = `
         <div class="cargo-info">
           <span>${item.nombre}</span>
@@ -955,7 +1112,7 @@
         </div>
         <div class="counter">
           <button type="button" onclick="cambiarCantidad('${item.id}', -1)">-</button>
-          <span id="qty_${item.id}">0</span>
+          <span id="qty_${item.id}">${qty}</span>
           <button type="button" onclick="cambiarCantidad('${item.id}', 1)">+</button>
         </div>
       `;
@@ -965,16 +1122,49 @@
 
   function cambiarCantidad(id, delta) {
     cantidades[id] = Math.max(0, cantidades[id] + delta);
-    document.getElementById(`qty_${id}`).textContent = cantidades[id];
-    actualizarPeso();
+    renderCargoGrid();
+    actualizarPesoYBadges();
   }
 
-  function actualizarPeso() {
+  function actualizarPesoYBadges() {
     let total = 0;
+    const conteoCat = {
+      dormitorio: 0,
+      living: 0,
+      cocina: 0,
+      cajas_patio: 0,
+      comercial: 0
+    };
+    const resumenNombres = [];
+
     itemsCarga.forEach(item => {
-      total += cantidades[item.id] * item.peso;
+      const q = cantidades[item.id];
+      if (q > 0) {
+        total += q * item.peso;
+        conteoCat[item.cat] += q;
+        resumenNombres.push(`${q}x ${item.nombre.split(" (")[0]}`);
+      }
     });
 
+    // Actualizar badges de pestañas
+    Object.keys(conteoCat).forEach(cat => {
+      const badge = document.getElementById(`badge_${cat}`);
+      if (badge) {
+        badge.textContent = conteoCat[cat];
+        badge.classList.toggle("visible", conteoCat[cat] > 0);
+      }
+    });
+
+    // Mostrar resumen rápido de lo marcado
+    const summaryBox = document.getElementById("selectedSummary");
+    if (resumenNombres.length > 0) {
+      summaryBox.style.display = "block";
+      summaryBox.innerHTML = `<strong>✅ Artículos marcados:</strong> ${resumenNombres.join(", ")}`;
+    } else {
+      summaryBox.style.display = "none";
+    }
+
+    // Actualizar barra de capacidad 2500 kg
     const maxCap = 2500;
     document.getElementById("pesoTotalTexto").textContent = `${total.toLocaleString("es-CL")} kg / 2.500 kg`;
 
@@ -995,7 +1185,6 @@
     }
   }
 
-  // Agregar etiquetas rápidas al cuadro de requerimiento escrito
   function agregarEtiqueta(texto) {
     const textarea = document.getElementById("requerimientoCliente");
     const actual = textarea.value.trim();
@@ -1004,7 +1193,6 @@
     textarea.focus();
   }
 
-  // Generar mensaje y abrir WhatsApp
   function enviarCotizacionWhatsApp() {
     const telefono = "56999502795";
 
@@ -1034,11 +1222,12 @@
       }
     });
 
+    const otrosArticulosCasa = document.getElementById("otrosArticulosCasa").value.trim();
     const requerimientoCliente = document.getElementById("requerimientoCliente").value.trim();
 
-    if (listaItems.length === 0 && !requerimientoCliente) {
-      alert("Por favor selecciona al menos un ítem de carga o escribe tu requerimiento en el Paso 5.");
-      document.getElementById("requerimientoCliente").focus();
+    if (listaItems.length === 0 && !otrosArticulosCasa && !requerimientoCliente) {
+      alert("Por favor marca algún artículo de la lista o escribe qué necesitas trasladar.");
+      document.getElementById("otrosArticulosCasa").focus();
       return;
     }
 
@@ -1050,7 +1239,7 @@
 
     const folio = "TPC-" + Math.floor(1000 + Math.random() * 9000);
 
-    let msg = `*COTIZACIÓN FLETE - TRANSPORTES PLACILLA CURAUMA*\n`;
+    let msg = `*COTIZACIÓN FLETE / MUDANZA - TRANSPORTES PLACILLA CURAUMA*\n`;
     msg += `📋 *Folio:* #${folio}\n`;
     msg += `👤 *Cliente:* ${cliente}\n`;
     msg += `🚛 *Unidad:* Kia Bongo / Frontier Abierto (2.500 kg)\n\n`;
@@ -1061,14 +1250,20 @@
     msg += `🏁 *DESTINO:* ${destinoTexto}\n`;
     if (destinoRef) msg += `   _Ref:_ ${destinoRef}\n\n`;
 
-    if (listaItems.length > 0) {
-      msg += `📦 *CARGA SELECCIONADA:*\n`;
-      msg += listaItems.join("\n") + `\n`;
-      msg += `⚖️ *Peso estimado:* ${pesoTotal.toLocaleString("es-CL")} kg\n\n`;
+    if (listaItems.length > 0 || otrosArticulosCasa) {
+      msg += `📦 *ARTÍCULOS A TRASLADAR:*\n`;
+      if (listaItems.length > 0) {
+        msg += listaItems.join("\n") + `\n`;
+        msg += `⚖️ *Peso estimado listado:* ${pesoTotal.toLocaleString("es-CL")} kg\n`;
+      }
+      if (otrosArticulosCasa) {
+        msg += `➕ *Otros artículos escritos:* ${otrosArticulosCasa}\n`;
+      }
+      msg += `\n`;
     }
 
     if (requerimientoCliente) {
-      msg += `💬 *REQUERIMIENTO DEL CLIENTE:*\n`;
+      msg += `💬 *REQUERIMIENTO ESPECIAL DEL CLIENTE:*\n`;
       msg += `${requerimientoCliente}\n\n`;
     }
 
@@ -1084,7 +1279,7 @@
 
   document.getElementById("fechaServicio").valueAsDate = new Date();
   initSelects();
-  initCargoGrid();
+  renderCargoGrid();
 </script>
 
 </body>
